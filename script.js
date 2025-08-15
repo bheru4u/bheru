@@ -4,15 +4,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeDisplay = document.getElementById('time');
     const wpmDisplay = document.getElementById('wpm');
     const accuracyDisplay = document.getElementById('accuracy');
+    const levelDisplay = document.getElementById('level');
     const restartBtn = document.getElementById('restart-btn');
     const keyboard = document.getElementById('keyboard');
 
-    const words = [
-        "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
-        "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
-        "this", "but", "his", "by", "from", "they", "we", "say", "her", "she",
-        "or", "an", "will", "my", "one", "all", "would", "there", "their", "what",
-        "so", "up", "out", "if", "about", "who", "get", "which", "go", "me"
+    const levels = [
+        {
+            name: "Level 1: The Basics",
+            words: ["the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at"]
+        },
+        {
+            name: "Level 2: Common Words",
+            words: ["this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their"]
+        },
+        {
+            name: "Level 3: Getting Longer",
+            words: ["about", "which", "would", "people", "into", "other", "than", "its", "over", "also", "after", "should", "because", "every", "example"]
+        },
+        {
+            name: "Level 4: Tricky Letters",
+            words: ["query", "jump", "quiz", "zone", "extra", "major", "joke", "fuzzy", "wave", "pack", "quick", "jive", "box", "zephyr", "glaze"]
+        },
+        {
+            name: "Level 5: Punctuation Practice",
+            words: ["don't", "it's", "you're", "world's", "well-being", "long-term", "state-of-the-art", "user-friendly", "e-mail", "re-evaluate", "co-worker"]
+        }
     ];
 
     let timer;
@@ -21,20 +37,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let correctStrokes = 0;
     let totalStrokes = 0;
     let gameStarted = false;
+    let currentLevel = 0;
 
-    function initializeGame() {
+    function loadLevel(levelIndex) {
+        if (levelIndex >= levels.length) {
+            // Handle game completion
+            wordsToTypeContainer.innerHTML = "<h1>Congratulations! You've completed all levels!</h1>";
+            userInput.style.display = 'none';
+            clearInterval(timer);
+            return;
+        }
+
+        currentLevel = levelIndex;
+        levelDisplay.textContent = currentLevel + 1;
+
+        const level = levels[currentLevel];
         wordsToTypeContainer.innerHTML = '';
-        words.slice(0, 20).forEach(word => {
+        level.words.forEach(word => {
             const wordSpan = document.createElement('span');
             wordSpan.classList.add('word');
-            // Wrap each letter in a span
             word.split('').forEach(letter => {
                 const letterSpan = document.createElement('span');
                 letterSpan.textContent = letter;
                 wordSpan.appendChild(letterSpan);
             });
             wordsToTypeContainer.appendChild(wordSpan);
-            // Add a space span after each word
             const spaceSpan = document.createElement('span');
             spaceSpan.innerHTML = '&nbsp;';
             wordsToTypeContainer.appendChild(spaceSpan);
@@ -45,6 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resetStats();
         updateCurrentWord();
         updateKeyboardHighlight();
+    }
+
+    function initializeGame() {
+        userInput.style.display = 'block';
+        loadLevel(0);
     }
 
     function resetStats() {
@@ -71,13 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateKeyboardHighlight() {
-        // Remove previous highlight
         keyboard.querySelectorAll('.key.highlight').forEach(key => key.classList.remove('highlight'));
-
         const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
-        if (currentWordIndex >= wordSpans.length) {
-            return; // Game over
-        }
+        if (currentWordIndex >= wordSpans.length) return;
 
         const currentWordSpan = wordSpans[currentWordIndex];
         const typedValue = userInput.value;
@@ -86,14 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (nextChar) {
             const key = keyboard.querySelector(`.key[data-key="${nextChar.toLowerCase()}"]`);
-            if (key) {
-                key.classList.add('highlight');
-            }
-        } else if (typedValue.length === currentWord.length) { // End of word, highlight space
+            if (key) key.classList.add('highlight');
+        } else if (typedValue.length === currentWord.length) {
             const spaceKey = keyboard.querySelector(`.key[data-key=" "]`);
-            if (spaceKey) {
-                spaceKey.classList.add('highlight');
-            }
+            if (spaceKey) spaceKey.classList.add('highlight');
         }
     }
 
@@ -102,9 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (keyElement) {
             const feedbackClass = isCorrect ? 'key-correct' : 'key-incorrect';
             keyElement.classList.add(feedbackClass);
-            setTimeout(() => {
-                keyElement.classList.remove(feedbackClass);
-            }, 200); // Remove feedback after 200ms
+            setTimeout(() => keyElement.classList.remove(feedbackClass), 200);
         }
     }
 
@@ -120,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function calculateWPM() {
-        // WPM is often calculated based on 5-character words
         const charsTyped = correctStrokes;
         const minutes = time / 60;
         const wpm = minutes > 0 ? Math.round((charsTyped / 5) / minutes) : 0;
@@ -143,47 +164,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         totalStrokes++;
 
-        // Handle letter-by-letter feedback
         const letterSpans = currentWordSpan.querySelectorAll('span');
-        let isCorrect = true;
-        for (let i = 0; i < typedValue.length; i++) {
-            if (typedValue[i] === currentWord[i]) {
-                letterSpans[i].classList.add('correct');
-                letterSpans[i].classList.remove('incorrect');
+        for (let i = 0; i < letterSpans.length; i++) {
+            if (i < typedValue.length) {
+                if (typedValue[i] === currentWord[i]) {
+                    letterSpans[i].className = 'correct';
+                } else {
+                    letterSpans[i].className = 'incorrect';
+                }
             } else {
-                letterSpans[i].classList.add('incorrect');
-                letterSpans[i].classList.remove('correct');
-                isCorrect = false;
+                letterSpans[i].className = '';
             }
         }
 
-        // Remove styling from letters that were deleted
-        for (let i = typedValue.length; i < letterSpans.length; i++) {
-            letterSpans[i].classList.remove('correct', 'incorrect');
-        }
-
-        // Keyboard feedback for the last typed character
         const lastChar = typedValue.slice(-1);
-        const correspondingChar = currentWord[typedValue.length - 1];
         if (lastChar) {
-            handleKeyPressFeedback(lastChar, lastChar === correspondingChar);
+            const isCorrect = lastChar === currentWord[typedValue.length - 1];
+            handleKeyPressFeedback(lastChar, isCorrect);
         }
 
-
-        // Word completion
         if (typedValue.endsWith(' ')) {
             if (typedValue.trim() === currentWord) {
-                correctStrokes += currentWord.length + 1; // +1 for space
-            } else {
-                 // No penalty for now, just doesn't count as correct
+                correctStrokes += currentWord.length + 1;
             }
             currentWordIndex++;
-            updateCurrentWord();
             userInput.value = '';
 
-            if (currentWordIndex === wordSpans.length) {
-                clearInterval(timer);
-                keyboard.querySelectorAll('.key.highlight').forEach(key => key.classList.remove('highlight'));
+            if (currentWordIndex >= wordSpans.length) {
+                // Level complete
+                loadLevel(currentLevel + 1);
+            } else {
+                updateCurrentWord();
             }
         }
 
@@ -191,20 +202,17 @@ document.addEventListener('DOMContentLoaded', () => {
         updateKeyboardHighlight();
     });
 
-    // Handle backspace visual effect
     userInput.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace') {
             const backspaceKey = keyboard.querySelector('.key[data-key="Backspace"]');
             if(backspaceKey) {
-                backspaceKey.classList.add('key-correct'); // or some other highlight
+                backspaceKey.classList.add('key-correct');
                 setTimeout(() => backspaceKey.classList.remove('key-correct'), 100);
             }
         }
     });
 
-    restartBtn.addEventListener('click', () => {
-        initializeGame();
-    });
+    restartBtn.addEventListener('click', initializeGame);
 
     initializeGame();
 });
