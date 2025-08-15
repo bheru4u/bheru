@@ -2,14 +2,43 @@
 
 body {
     font-family: 'Roboto Mono', monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
     color: #f0f0f0;
     margin: 0;
     overflow: hidden;
+}
+
+#main-layout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+#left-ad-container {
+    width: 200px;
+    height: 80vh;
+    margin-right: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-placeholder-side {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px dashed #00ffff;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #00ffff;
+    text-shadow: 0 0 8px #00ffff;
 }
 
 .container {
@@ -19,6 +48,8 @@ body {
     border-radius: 15px;
     border: 2px solid #ff00ff;
     box-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff inset;
+    flex-grow: 1;
+    max-width: 900px; /* Constrain game width */
 }
 
 h1 {
@@ -170,4 +201,76 @@ h1 {
 [data-finger].highlight::after {
     content: ''; /* Hiding finger text for a cleaner look, but logic can be re-added */
     display: none;
+}
+
+/* Interstitial Popup Styles */
+.hidden {
+    display: none !important;
+}
+
+#interstitial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#interstitial-popup {
+    background: #1a1a1a;
+    padding: 2rem 3rem;
+    border-radius: 15px;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 25px #00ffff;
+    text-align: center;
+    color: #f0f0f0;
+}
+
+#interstitial-popup h2 {
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+    margin-bottom: 1rem;
+}
+
+#ad-placeholder {
+    width: 300px;
+    height: 150px;
+    background: #333;
+    border: 1px dashed #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 1.5rem auto;
+    color: #888;
+}
+
+#interstitial-popup p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+#next-level-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    background-color: #00ff00;
+    color: #000;
+    transition: all 0.3s;
+    text-shadow: 0 0 5px #000;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+}
+
+#next-level-btn:hover {
+    background-color: #fff;
+    color: #00ff00;
+    box-shadow: 0 0 20px #00ff00;
 }

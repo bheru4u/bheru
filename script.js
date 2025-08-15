@@ -1,37 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Game elements
     const wordsToTypeContainer = document.getElementById('words-to-type');
     const userInput = document.getElementById('user-input');
+    const keyboard = document.getElementById('keyboard');
+    const restartBtn = document.getElementById('restart-btn');
+
+    // Stats display
     const timeDisplay = document.getElementById('time');
     const wpmDisplay = document.getElementById('wpm');
     const accuracyDisplay = document.getElementById('accuracy');
     const levelDisplay = document.getElementById('level');
-    const restartBtn = document.getElementById('restart-btn');
-    const keyboard = document.getElementById('keyboard');
+
+    // Interstitial popup elements
+    const interstitialOverlay = document.getElementById('interstitial-overlay');
+    const countdownDisplay = document.getElementById('countdown');
+    const nextLevelBtn = document.getElementById('next-level-btn');
 
     const levels = [
-        {
-            name: "Level 1: The Basics",
-            words: ["the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at"]
-        },
-        {
-            name: "Level 2: Common Words",
-            words: ["this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their"]
-        },
-        {
-            name: "Level 3: Getting Longer",
-            words: ["about", "which", "would", "people", "into", "other", "than", "its", "over", "also", "after", "should", "because", "every", "example"]
-        },
-        {
-            name: "Level 4: Tricky Letters",
-            words: ["query", "jump", "quiz", "zone", "extra", "major", "joke", "fuzzy", "wave", "pack", "quick", "jive", "box", "zephyr", "glaze"]
-        },
-        {
-            name: "Level 5: Punctuation Practice",
-            words: ["don't", "it's", "you're", "world's", "well-being", "long-term", "state-of-the-art", "user-friendly", "e-mail", "re-evaluate", "co-worker"]
-        }
+        // (Levels data remains the same)
+        { name: "Level 1: The Basics", words: ["the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at"] },
+        { name: "Level 2: Common Words", words: ["this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their"] },
+        { name: "Level 3: Getting Longer", words: ["about", "which", "would", "people", "into", "other", "than", "its", "over", "also", "after", "should", "because", "every", "example"] },
+        { name: "Level 4: Tricky Letters", words: ["query", "jump", "quiz", "zone", "extra", "major", "joke", "fuzzy", "wave", "pack", "quick", "jive", "box", "zephyr", "glaze"] },
+        { name: "Level 5: Punctuation Practice", words: ["don't", "it's", "you're", "world's", "well-being", "long-term", "state-of-the-art", "user-friendly", "e-mail", "re-evaluate", "co-worker"] }
     ];
 
+    // Game state variables
     let timer;
+    let interstitialTimer;
     let time = 0;
     let currentWordIndex = 0;
     let correctStrokes = 0;
@@ -39,11 +35,34 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameStarted = false;
     let currentLevel = 0;
 
+    function showInterstitial() {
+        clearInterval(timer); // Pause the main game timer
+        interstitialOverlay.classList.remove('hidden');
+        userInput.blur(); // Unfocus the input field
+
+        let countdown = 5;
+        countdownDisplay.textContent = countdown;
+
+        interstitialTimer = setInterval(() => {
+            countdown--;
+            countdownDisplay.textContent = countdown;
+            if (countdown <= 0) {
+                proceedToNextLevel();
+            }
+        }, 1000);
+    }
+
+    function proceedToNextLevel() {
+        clearInterval(interstitialTimer);
+        interstitialOverlay.classList.add('hidden');
+        loadLevel(currentLevel + 1);
+    }
+
     function loadLevel(levelIndex) {
         if (levelIndex >= levels.length) {
-            // Handle game completion
             wordsToTypeContainer.innerHTML = "<h1>Congratulations! You've completed all levels!</h1>";
             userInput.style.display = 'none';
+            keyboard.classList.add('hidden');
             clearInterval(timer);
             return;
         }
@@ -76,6 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initializeGame() {
         userInput.style.display = 'block';
+        keyboard.classList.remove('hidden');
+        interstitialOverlay.classList.add('hidden');
+        clearInterval(interstitialTimer);
         loadLevel(0);
     }
 
@@ -91,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         accuracyDisplay.textContent = 100;
     }
 
+    // (Other functions like updateCurrentWord, updateKeyboardHighlight, etc. remain the same)
     function updateCurrentWord() {
         const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
         wordSpans.forEach((span, index) => {
@@ -153,7 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
         accuracyDisplay.textContent = accuracy;
     }
 
+
     userInput.addEventListener('input', () => {
+        if (interstitialOverlay.classList.contains('hidden') === false) {
+            userInput.value = ''; // Prevent typing while popup is visible
+            return;
+        }
         startGame();
         const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
         if (currentWordIndex >= wordSpans.length) return;
@@ -191,8 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
             userInput.value = '';
 
             if (currentWordIndex >= wordSpans.length) {
-                // Level complete
-                loadLevel(currentLevel + 1);
+                // Level complete, show interstitial instead of loading next level directly
+                showInterstitial();
             } else {
                 updateCurrentWord();
             }
@@ -212,7 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Event listeners for popup
+    nextLevelBtn.addEventListener('click', proceedToNextLevel);
     restartBtn.addEventListener('click', initializeGame);
 
+    // Initial game start
     initializeGame();
 });
