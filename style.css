@@ -180,6 +180,7 @@ h1 {
     border-color: #fff;
     box-shadow: 0 0 20px #00ffff;
     transform: scale(1.1);
+    z-index: 20; /* Bring the whole key forward */
 }
 
 .key.key-correct {
@@ -199,8 +200,21 @@ h1 {
 }
 
 [data-finger].highlight::after {
-    content: ''; /* Hiding finger text for a cleaner look, but logic can be re-added */
-    display: none;
+    content: attr(data-finger);
+    position: absolute;
+    bottom: -45px; /* Increased bottom offset */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff00ff;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    white-space: nowrap;
+    z-index: 10;
+    text-shadow: 0 0 5px #fff;
+    box-shadow: 0 0 10px #ff00ff;
 }
 
 /* Interstitial Popup Styles */
