@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Auction</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Cricket Player Auction</h1>
+
+    <div id="auth-container">
+        <div id="login-form">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Username" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button id="login-button">Login</button>
+            <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
+        </div>
+
+        <div id="register-form" style="display: none;">
+            <h2>Register</h2>
+            <input type="text" id="register-username" placeholder="Username" required>
+            <input type="password" id="register-password" placeholder="Password" required>
+            <select id="register-teamId">
+                <option value="1">Team A</option>
+                <option value="2">Team B</option>
+            </select>
+            <button id="register-button">Register</button>
+            <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+        </div>
+    </div>
+
+    <div id="auction-container" style="display: none;">
+        <button id="logout-button">Logout</button>
+
+        <div id="admin-panel" style="display: none;">
+            <h2>Admin Controls</h2>
+            <button id="start-auction-button">Start Auction</button>
+            <div>
+                <h3>Upload Players (CSV)</h3>
+                <input type="file" id="player-file-input" accept=".csv">
+                <button id="upload-players-button">Upload</button>
+            </div>
+        </div>
+
+        <div class="auction-room">
+            <div class="player-on-block">
+                <h2>Player on Block</h2>
+                <div id="current-player">
+                    <p>Waiting for auction to start...</p>
+                </div>
+            </div>
+
+            <div id="bidding-container">
+                <div class="bidding-panel">
+                    <h2>Bidding Panel</h2>
+                    <div id="timer">Time Left: <strong>30</strong>s</div>
+                    <div id="current-bid">Current Bid: <strong>-</strong></div>
+                    <div id="highest-bidder">Highest Bidder: <strong>-</strong></div>
+                    <button id="bid-button">Place Bid</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-dashboards">
+            <h2>Team Dashboards</h2>
+            <div id="teams-container"></div>
+        </div>
+
+        <div class="player-catalog">
+            <h2>Player Catalog</h2>
+            <div id="players-container"></div>
+        </div>
+
+        <div class="sponsor-banner">
+          <h2>Sponsor Banner</h2>
+          <div id="sponsor-container"></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

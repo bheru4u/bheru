@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #0056b3;
+}
+
+.auction-room, .team-dashboards, .player-catalog {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.auction-room {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+.player-on-block, .bidding-panel {
+    width: 45%;
+}
+
+#current-player, .bidding-panel div {
+    margin-bottom: 10px;
+}
+
+#bid-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#bid-button:hover {
+    background: #218838;
+}
+
+#teams-container, #players-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.team-card, .player-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.team-card h3, .player-card h3 {
+    margin-top: 0;
+}
+
+#admin-panel {
+    background: #fff8e1;
+    border: 1px solid #ffc107;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+#admin-panel h2, #admin-panel h3 {
+    text-align: left;
+    color: #c66900;
+}
+
+#admin-panel div {
+    margin-top: 15px;
+}
+
+#auth-container input, #auth-container select, #auth-container button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+.sponsor-banner {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+#sponsor-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.sponsor-logo {
+    max-width: 150px;
+    max-height: 80px;
+}
