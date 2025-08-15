@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const keyboard = document.getElementById('keyboard');
     const restartBtn = document.getElementById('restart-btn');
+    const levelSelect = document.getElementById('level-select');
 
     // Stats display
     const timeDisplay = document.getElementById('time');
@@ -15,9 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const interstitialOverlay = document.getElementById('interstitial-overlay');
     const countdownDisplay = document.getElementById('countdown');
     const nextLevelBtn = document.getElementById('next-level-btn');
+    const popupWpm = document.getElementById('popup-wpm');
+    const popupAccuracy = document.getElementById('popup-accuracy');
 
     const levels = [
-        // (Levels data remains the same)
         { name: "Level 1: The Basics", words: ["the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at"] },
         { name: "Level 2: Common Words", words: ["this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their"] },
         { name: "Level 3: Getting Longer", words: ["about", "which", "would", "people", "into", "other", "than", "its", "over", "also", "after", "should", "because", "every", "example"] },
@@ -35,10 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameStarted = false;
     let currentLevel = 0;
 
-    function showInterstitial() {
-        clearInterval(timer); // Pause the main game timer
+    function populateLevelSelector() {
+        levels.forEach((level, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = level.name;
+            levelSelect.appendChild(option);
+        });
+    }
+
+    function showInterstitial(finalWpm, finalAccuracy) {
+        clearInterval(timer);
         interstitialOverlay.classList.remove('hidden');
-        userInput.blur(); // Unfocus the input field
+        userInput.blur();
+
+        // Display stats in the popup
+        popupWpm.textContent = finalWpm;
+        popupAccuracy.textContent = `${finalAccuracy}%`;
 
         let countdown = 5;
         countdownDisplay.textContent = countdown;
@@ -69,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentLevel = levelIndex;
         levelDisplay.textContent = currentLevel + 1;
+        levelSelect.value = currentLevel;
 
         const level = levels[currentLevel];
         wordsToTypeContainer.innerHTML = '';
@@ -98,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         keyboard.classList.remove('hidden');
         interstitialOverlay.classList.add('hidden');
         clearInterval(interstitialTimer);
+        populateLevelSelector();
         loadLevel(0);
     }
 
@@ -113,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         accuracyDisplay.textContent = 100;
     }
 
-    // (Other functions like updateCurrentWord, updateKeyboardHighlight, etc. remain the same)
+    // (Other functions remain the same)
     function updateCurrentWord() {
         const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
         wordSpans.forEach((span, index) => {
@@ -169,17 +186,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = time / 60;
         const wpm = minutes > 0 ? Math.round((charsTyped / 5) / minutes) : 0;
         wpmDisplay.textContent = wpm;
+        return wpm;
     }
 
     function calculateAccuracy() {
         const accuracy = totalStrokes > 0 ? Math.round((correctStrokes / totalStrokes) * 100) : 100;
         accuracyDisplay.textContent = accuracy;
+        return accuracy;
     }
-
 
     userInput.addEventListener('input', () => {
         if (interstitialOverlay.classList.contains('hidden') === false) {
-            userInput.value = ''; // Prevent typing while popup is visible
+            userInput.value = '';
             return;
         }
         startGame();
@@ -219,8 +237,9 @@ document.addEventListener('DOMContentLoaded', () => {
             userInput.value = '';
 
             if (currentWordIndex >= wordSpans.length) {
-                // Level complete, show interstitial instead of loading next level directly
-                showInterstitial();
+                const finalWpm = calculateWPM();
+                const finalAccuracy = calculateAccuracy();
+                showInterstitial(finalWpm, finalAccuracy);
             } else {
                 updateCurrentWord();
             }
@@ -240,10 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listeners for popup
-    nextLevelBtn.addEventListener('click', proceedToNextLevel);
-    restartBtn.addEventListener('click', initializeGame);
+    levelSelect.addEventListener('change', (e) => {
+        const levelIndex = parseInt(e.target.value, 10);
+        loadLevel(levelIndex);
+    });
 
-    // Initial game start
+    nextLevelBtn.addEventListener('click', proceedToNextLevel);
+    restartBtn.addEventListener('click', () => loadLevel(currentLevel));
+
     initializeGame();
 });

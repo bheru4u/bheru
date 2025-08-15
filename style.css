@@ -95,6 +95,26 @@ h1 {
     box-shadow: 0 0 15px #00ffff;
 }
 
+#level-select-container {
+    margin-bottom: 1rem;
+    color: #f0f0f0;
+}
+
+#level-select {
+    background-color: #1a1a1a;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    border-radius: 5px;
+    padding: 5px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1rem;
+}
+
+#level-select:focus {
+    outline: none;
+    box-shadow: 0 0 10px #00ffff;
+}
+
 #stats-container {
     display: flex;
     justify-content: space-around;
@@ -249,6 +269,18 @@ h1 {
     color: #00ff00;
     text-shadow: 0 0 10px #00ff00;
     margin-bottom: 1rem;
+}
+
+#popup-stats {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 1.5rem 0;
+    font-size: 1.5rem;
+}
+
+#popup-stats p {
+    color: #f0f0f0;
+    text-shadow: 0 0 10px #00ff00; /* Highlight effect */
 }
 
 #ad-placeholder {

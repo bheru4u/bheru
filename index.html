@@ -87,6 +87,10 @@
                     <div class="key widest" data-key=" " data-finger="thumb">Space</div>
                 </div>
             </div>
+            <div id="level-select-container">
+                <label for="level-select">Jump to Level:</label>
+                <select id="level-select"></select>
+            </div>
             <div id="stats-container">
                 <p>Level: <span id="level">1</span></p>
                 <p>Time: <span id="time">0</span>s</p>
@@ -99,6 +103,10 @@
             <div id="interstitial-overlay" class="hidden">
                 <div id="interstitial-popup">
                     <h2>Level Complete!</h2>
+                <div id="popup-stats">
+                    <p>WPM: <span id="popup-wpm">0</span></p>
+                    <p>Accuracy: <span id="popup-accuracy">0</span>%</p>
+                </div>
                     <div id="ad-placeholder">
                         <p>Your Ad Here</p>
                         <p>(Imagine a cool ad!)</p>
