@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+body {
+    font-family: 'Roboto Mono', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+    color: #f0f0f0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff inset;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+    color: #ff00ff;
+    text-shadow: 0 0 10px #ff00ff;
+    font-weight: 700;
+}
+
+#game-container {
+    margin-bottom: 1.5rem;
+}
+
+#words-to-type {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    letter-spacing: 3px;
+    padding: 1.5rem;
+    border: 1px solid #00ffff;
+    border-radius: 10px;
+    min-height: 60px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    text-shadow: 0 0 5px #f0f0f0;
+}
+
+#user-input {
+    width: 80%;
+    padding: 0.75rem;
+    font-size: 1.4rem;
+    border: 1px solid #00ffff;
+    border-radius: 5px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    font-family: 'Roboto Mono', monospace;
+}
+
+#user-input:focus {
+    outline: none;
+    box-shadow: 0 0 15px #00ffff;
+}
+
+#stats-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+}
+
+#restart-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid #ff00ff;
+    border-radius: 5px;
+    background-color: #ff00ff;
+    color: #fff;
+    transition: all 0.3s;
+    text-shadow: 0 0 5px #fff;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+}
+
+#restart-btn:hover {
+    background-color: #fff;
+    color: #ff00ff;
+    box-shadow: 0 0 20px #ff00ff;
+}
+
+.word {
+    margin: 5px;
+    padding: 5px;
+}
+
+.word span.correct {
+    color: #00ff00;
+    text-shadow: 0 0 8px #00ff00;
+}
+
+.word span.incorrect {
+    color: #ff4d4d;
+    text-decoration: underline;
+    text-shadow: 0 0 8px #ff4d4d;
+}
+
+.word.current {
+    /* No specific style for current word, letter-based is enough */
+}
+
+#keyboard {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.key {
+    padding: 0.8rem 1rem;
+    margin: 0 4px;
+    border: 1px solid #00ffff;
+    border-radius: 5px;
+    background-color: #222;
+    color: #00ffff;
+    font-size: 1rem;
+    min-width: 25px;
+    text-align: center;
+    transition: all 0.1s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.key.wide { padding: 0.8rem 1.5rem; }
+.key.widest { padding: 0.8rem 8rem; }
+
+.key.highlight {
+    background-color: #00ffff;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 20px #00ffff;
+    transform: scale(1.1);
+}
+
+.key.key-correct {
+    background-color: #00ff00;
+    color: #000;
+    box-shadow: 0 0 15px #00ff00;
+}
+
+.key.key-incorrect {
+    background-color: #ff4d4d;
+    color: #000;
+    box-shadow: 0 0 15px #ff4d4d;
+}
+
+[data-finger] {
+    position: relative;
+}
+
+[data-finger].highlight::after {
+    content: ''; /* Hiding finger text for a cleaner look, but logic can be re-added */
+    display: none;
+}
