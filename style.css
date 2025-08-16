@@ -129,65 +129,43 @@ header h1 {
     background-color: #fff;
     border: 1px solid var(--secondary-color);
     border-radius: 5px;
-    padding: 15px;
+    padding: 5px;
     min-width: 40px;
-    text-align: center;
     font-weight: bold;
     color: var(--secondary-color);
     transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.key-char {
+    font-size: 1.1rem;
+}
+
+.finger-hint {
+    font-size: 0.7rem;
+    text-transform: capitalize;
+    font-weight: normal;
+    visibility: hidden;
 }
 
 .key.active {
-    background-color: var(--highlight-color);
+    background-color: var(--secondary-color);
     color: #fff;
     transform: scale(1.1);
+}
+
+.key.active .finger-hint {
+    visibility: visible;
+    color: var(--highlight-color);
 }
 
 .key.highlight-finger {
     box-shadow: 0 0 10px 3px var(--highlight-color);
 }
-
-#finger-guide {
-    display: flex;
-    justify-content: center;
-    gap: 50px;
-    margin-bottom: 20px;
-    height: 120px;
-}
-
-.hand {
-    display: flex;
-    align-items: flex-end;
-}
-
-.finger {
-    width: 25px;
-    height: 100px;
-    border: 2px solid var(--secondary-color);
-    border-radius: 15px 15px 5px 5px;
-    margin: 0 5px;
-    background-color: #fff;
-    transition: all 0.2s ease;
-    display: flex;
-    justify-content: center;
-    padding-top: 10px;
-    font-size: 0.8rem;
-    color: var(--secondary-color);
-}
-
-.finger.thumb { height: 60px; }
-.finger.index { height: 90px; }
-.finger.middle { height: 100px; }
-.finger.ring { height: 95px; }
-.finger.pinky { height: 80px; }
-
-.finger.active {
-    background-color: var(--highlight-color);
-    border-color: var(--highlight-color);
-    color: white;
-    transform: translateY(-10px);
-}
-
 
 .ad-area {
     grid-area: ad;

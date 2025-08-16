@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultWpmEl = document.getElementById('result-wpm');
     const resultAccuracyEl = document.getElementById('result-accuracy');
     const nextLevelBtn = document.getElementById('next-level-btn');
-    const leftHandEl = document.getElementById('left-hand');
-    const rightHandEl = document.getElementById('right-hand');
 
     // Game Data & State
     const levels = Array.from({ length: 200 }, (_, i) => {
@@ -68,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function init() {
         createKeyboard();
-        createFingerGuide();
         populateLevels();
         loadLevel(0);
 
@@ -216,25 +213,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Keyboard and fingers
         const nextChar = state.typedIndex < state.text.length ? state.text[state.typedIndex] : null;
-        highlightKeyAndFinger(nextChar);
+        highlightKey(nextChar);
     }
 
-    function highlightKeyAndFinger(char) {
+    function highlightKey(char) {
         document.querySelectorAll('.key.active').forEach(k => k.classList.remove('active'));
-        document.querySelectorAll('.finger.active').forEach(f => f.classList.remove('active'));
 
         if (char) {
             const keyEl = document.querySelector(`.key[data-key="${char.toLowerCase() === ' ' ? 'space' : char.toLowerCase()}"]`);
             if (keyEl) {
                 keyEl.classList.add('active');
-            }
-
-            const fingerInfo = fingerMapping[char];
-            if (fingerInfo) {
-                const fingerEl = document.querySelector(`#${fingerInfo.hand}-hand .${fingerInfo.finger}`);
-                if (fingerEl) {
-                    fingerEl.classList.add('active');
-                }
             }
         }
     }
@@ -247,32 +235,25 @@ document.addEventListener('DOMContentLoaded', () => {
             row.forEach(key => {
                 const keyEl = document.createElement('div');
                 keyEl.classList.add('key');
-                keyEl.textContent = key;
+
                 const dataKey = key.toLowerCase();
                 keyEl.setAttribute('data-key', dataKey);
+
+                const fingerInfo = fingerMapping[key] || fingerMapping[key.toLowerCase()];
+                const hintText = fingerInfo ? fingerInfo.finger : '';
+
+                keyEl.innerHTML = `
+                    <span class="key-char">${key}</span>
+                    <span class="finger-hint">${hintText}</span>
+                `;
+
                 if (dataKey === 'space') keyEl.classList.add('space');
                 if (key.length > 1 && key !== ' ') keyEl.style.flexGrow = '1.5';
+
                 rowEl.appendChild(keyEl);
             });
             keyboardEl.appendChild(rowEl);
         });
-    }
-
-    function createFingerGuide() {
-        const hands = {
-            left: { el: leftHandEl, fingers: ['pinky', 'ring', 'middle', 'index', 'thumb'] },
-            right: { el: rightHandEl, fingers: ['thumb', 'index', 'middle', 'ring', 'pinky'] }
-        };
-
-        for (const hand in hands) {
-            hands[hand].el.innerHTML = '';
-            hands[hand].fingers.forEach(fingerName => {
-                const fingerEl = document.createElement('div');
-                fingerEl.classList.add('finger', fingerName);
-                fingerEl.textContent = fingerName.charAt(0).toUpperCase();
-                hands[hand].el.appendChild(fingerEl);
-            });
-        }
     }
 
     function populateLevels() {
