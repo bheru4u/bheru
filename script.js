@@ -1,271 +1,288 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Game elements
-    const wordsToTypeContainer = document.getElementById('words-to-type');
-    const userInput = document.getElementById('user-input');
-    const keyboard = document.getElementById('keyboard');
-    const restartBtn = document.getElementById('restart-btn');
-    const levelSelect = document.getElementById('level-select');
-
-    // Stats display
-    const timeDisplay = document.getElementById('time');
-    const wpmDisplay = document.getElementById('wpm');
-    const accuracyDisplay = document.getElementById('accuracy');
-    const levelDisplay = document.getElementById('level');
-
-    // Interstitial popup elements
-    const interstitialOverlay = document.getElementById('interstitial-overlay');
-    const countdownDisplay = document.getElementById('countdown');
+    // DOM Elements
+    const textToTypeEl = document.getElementById('text-to-type');
+    const inputField = document.getElementById('input-field');
+    const timeEl = document.getElementById('time');
+    const wpmEl = document.getElementById('wpm');
+    const accuracyEl = document.getElementById('accuracy');
+    const levelSelector = document.getElementById('level');
+    const keyboardEl = document.getElementById('keyboard');
+    const resultModal = document.getElementById('result-modal');
+    const resultWpmEl = document.getElementById('result-wpm');
+    const resultAccuracyEl = document.getElementById('result-accuracy');
     const nextLevelBtn = document.getElementById('next-level-btn');
-    const popupWpm = document.getElementById('popup-wpm');
-    const popupAccuracy = document.getElementById('popup-accuracy');
+    const leftHandEl = document.getElementById('left-hand');
+    const rightHandEl = document.getElementById('right-hand');
 
-    const levels = [
-        { name: "Level 1: The Basics", words: ["the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at"] },
-        { name: "Level 2: Common Words", words: ["this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their"] },
-        { name: "Level 3: Getting Longer", words: ["about", "which", "would", "people", "into", "other", "than", "its", "over", "also", "after", "should", "because", "every", "example"] },
-        { name: "Level 4: Tricky Letters", words: ["query", "jump", "quiz", "zone", "extra", "major", "joke", "fuzzy", "wave", "pack", "quick", "jive", "box", "zephyr", "glaze"] },
-        { name: "Level 5: Punctuation Practice", words: ["don't", "it's", "you're", "world's", "well-being", "long-term", "state-of-the-art", "user-friendly", "e-mail", "re-evaluate", "co-worker"] }
+    // Game Data & State
+    const levels = Array.from({ length: 200 }, (_, i) => {
+        if (i < 5) return `asdf jkl;`;
+        if (i < 10) return `asdfg hjkl;`;
+        if (i < 20) return `qwer yuio`;
+        if (i < 30) return `zxcv m,./`;
+        if (i < 50) return `the quick brown fox`;
+        if (i < 75) return `jumps over the lazy dog`;
+        if (i < 100) return `pack my box with five dozen liquor jugs`;
+        if (i < 150) return `How quickly daft jumping zebras vex.`;
+        if (i < 199) return `Mr. Jock, TV quiz PhD, bags few lynx.`;
+        return `Congratulations! You've reached the final level. Your typing skills are truly impressive. Keep practicing to maintain your speed and accuracy!`;
+    });
+
+    const keyboardLayout = [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+        ['CapsLock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
+        ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+        [' ', ' ', ' ', 'Space', ' ', ' ', ' ']
     ];
 
-    // Game state variables
-    let timer;
-    let interstitialTimer;
-    let time = 0;
-    let currentWordIndex = 0;
-    let correctStrokes = 0;
-    let totalStrokes = 0;
-    let gameStarted = false;
-    let currentLevel = 0;
+    const fingerMapping = {
+        '`': { hand: 'left', finger: 'pinky' }, '1': { hand: 'left', finger: 'pinky' }, 'q': { hand: 'left', finger: 'pinky' }, 'a': { hand: 'left', finger: 'pinky' }, 'z': { hand: 'left', finger: 'pinky' },
+        '~': { hand: 'left', finger: 'pinky' }, '!': { hand: 'left', finger: 'pinky' }, 'Q': { hand: 'left', finger: 'pinky' }, 'A': { hand: 'left', finger: 'pinky' }, 'Z': { hand: 'left', finger: 'pinky' },
+        '2': { hand: 'left', finger: 'ring' }, 'w': { hand: 'left', finger: 'ring' }, 's': { hand: 'left', finger: 'ring' }, 'x': { hand: 'left', finger: 'ring' },
+        '@': { hand: 'left', finger: 'ring' }, 'W': { hand: 'left', finger: 'ring' }, 'S': { hand: 'left', finger: 'ring' }, 'X': { hand: 'left', finger: 'ring' },
+        '3': { hand: 'left', finger: 'middle' }, 'e': { hand: 'left', finger: 'middle' }, 'd': { hand: 'left', finger: 'middle' }, 'c': { hand: 'left', finger: 'middle' },
+        '#': { hand: 'left', finger: 'middle' }, 'E': { hand: 'left', finger: 'middle' }, 'D': { hand: 'left', finger: 'middle' }, 'C': { hand: 'left', finger: 'middle' },
+        '4': { hand: 'left', finger: 'index' }, 'r': { hand: 'left', finger: 'index' }, 'f': { hand: 'left', finger: 'index' }, 'v': { hand: 'left', finger: 'index' },
+        '$': { hand: 'left', finger: 'index' }, 'R': { hand: 'left', finger: 'index' }, 'F': { hand: 'left', finger: 'index' }, 'V': { hand: 'left', finger: 'index' },
+        '5': { hand: 'left', finger: 'index' }, 't': { hand: 'left', finger: 'index' }, 'g': { hand: 'left', finger: 'index' }, 'b': { hand: 'left', finger: 'index' },
+        '%': { hand: 'left', finger: 'index' }, 'T': { hand: 'left', finger: 'index' }, 'G': { hand: 'left', finger: 'index' }, 'B': { hand: 'left', finger: 'index' },
+        '6': { hand: 'right', finger: 'index' }, 'y': { hand: 'right', finger: 'index' }, 'h': { hand: 'right', finger: 'index' }, 'n': { hand: 'right', finger: 'index' },
+        '^': { hand: 'right', finger: 'index' }, 'Y': { hand: 'right', finger: 'index' }, 'H': { hand: 'right', finger: 'index' }, 'N': { hand: 'right', finger: 'index' },
+        '7': { hand: 'right', finger: 'index' }, 'u': { hand: 'right', finger: 'index' }, 'j': { hand: 'right', finger: 'index' }, 'm': { hand: 'right', finger: 'index' },
+        '&': { hand: 'right', finger: 'index' }, 'U': { hand: 'right', finger: 'index' }, 'J': { hand: 'right', finger: 'index' }, 'M': { hand: 'right', finger: 'index' },
+        '8': { hand: 'right', finger: 'middle' }, 'i': { hand: 'right', finger: 'middle' }, 'k': { hand: 'right', finger: 'middle' }, ',': { hand: 'right', finger: 'middle' },
+        '*': { hand: 'right', finger: 'middle' }, 'I': { hand: 'right', finger: 'middle' }, 'K': { hand: 'right', finger: 'middle' }, '<': { hand: 'right', finger: 'middle' },
+        '9': { hand: 'right', finger: 'ring' }, 'o': { hand: 'right', finger: 'ring' }, 'l': { hand: 'right', finger: 'ring' }, '.': { hand: 'right', finger: 'ring' },
+        '(': { hand: 'right', finger: 'ring' }, 'O': { hand: 'right', finger: 'ring' }, 'L': { hand: 'right', finger: 'ring' }, '>': { hand: 'right', finger: 'ring' },
+        '0': { hand: 'right', finger: 'pinky' }, 'p': { hand: 'right', finger: 'pinky' }, ';': { hand: 'right', finger: 'pinky' }, '/': { hand: 'right', finger: 'pinky' },
+        ')': { hand: 'right', finger: 'pinky' }, 'P': { hand: 'right', finger: 'pinky' }, ':': { hand: 'right', finger: 'pinky' }, '?': { hand: 'right', finger: 'pinky' },
+        '-': { hand: 'right', finger: 'pinky' }, '[': { hand: 'right', finger: 'pinky' }, "'": { hand: 'right', finger: 'pinky' },
+        '_': { hand: 'right', finger: 'pinky' }, '{': { hand: 'right', finger: 'pinky' }, '"': { hand: 'right', finger: 'pinky' },
+        '=': { hand: 'right', finger: 'pinky' }, ']': { hand: 'right', finger: 'pinky' }, '\\': { hand: 'right', finger: 'pinky' },
+        '+': { hand: 'right', finger: 'pinky' }, '}': { hand: 'right', finger: 'pinky' }, '|': { hand: 'right', finger: 'pinky' },
+        ' ': { hand: 'right', finger: 'thumb' }
+    };
 
-    function populateLevelSelector() {
-        levels.forEach((level, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = level.name;
-            levelSelect.appendChild(option);
+    let state = {};
+
+    function init() {
+        createKeyboard();
+        createFingerGuide();
+        populateLevels();
+        loadLevel(0);
+
+        inputField.addEventListener('keydown', handleKeyDown);
+        levelSelector.addEventListener('change', (e) => loadLevel(parseInt(e.target.value)));
+        nextLevelBtn.addEventListener('click', () => {
+            resultModal.style.display = 'none';
+            const nextLevel = state.currentLevel + 1 < levels.length ? state.currentLevel + 1 : 0;
+            loadLevel(nextLevel);
         });
+        document.body.addEventListener('click', () => inputField.focus());
     }
 
-    function showInterstitial(finalWpm, finalAccuracy) {
-        clearInterval(timer);
-        interstitialOverlay.classList.remove('hidden');
-        userInput.blur();
-
-        // Display stats in the popup
-        popupWpm.textContent = finalWpm;
-        popupAccuracy.textContent = `${finalAccuracy}%`;
-
-        let countdown = 5;
-        countdownDisplay.textContent = countdown;
-
-        interstitialTimer = setInterval(() => {
-            countdown--;
-            countdownDisplay.textContent = countdown;
-            if (countdown <= 0) {
-                proceedToNextLevel();
-            }
-        }, 1000);
-    }
-
-    function proceedToNextLevel() {
-        clearInterval(interstitialTimer);
-        interstitialOverlay.classList.add('hidden');
-        loadLevel(currentLevel + 1);
+    function newState(levelIndex) {
+        return {
+            currentLevel: levelIndex,
+            text: levels[levelIndex],
+            spans: null,
+            timer: null,
+            time: 60,
+            typedIndex: 0,
+            mistakes: 0,
+            totalTyped: 0,
+            isTyping: false,
+            startTime: null
+        };
     }
 
     function loadLevel(levelIndex) {
-        if (levelIndex >= levels.length) {
-            wordsToTypeContainer.innerHTML = "<h1>Congratulations! You've completed all levels!</h1>";
-            userInput.style.display = 'none';
-            keyboard.classList.add('hidden');
-            clearInterval(timer);
-            return;
+        state = newState(levelIndex);
+        levelSelector.value = state.currentLevel;
+
+        textToTypeEl.innerHTML = '';
+        state.text.split('').forEach(char => {
+            const span = document.createElement('span');
+            span.textContent = char;
+            textToTypeEl.appendChild(span);
+        });
+        state.spans = textToTypeEl.children;
+
+        resetGame();
+    }
+
+    function handleKeyDown(e) {
+        e.preventDefault();
+        const { key } = e;
+
+        if (!state.isTyping && key.length === 1) {
+            state.isTyping = true;
+            state.startTime = new Date();
+            startTimer();
         }
 
-        currentLevel = levelIndex;
-        levelDisplay.textContent = currentLevel + 1;
-        levelSelect.value = currentLevel;
-
-        const level = levels[currentLevel];
-        wordsToTypeContainer.innerHTML = '';
-        level.words.forEach(word => {
-            const wordSpan = document.createElement('span');
-            wordSpan.classList.add('word');
-            word.split('').forEach(letter => {
-                const letterSpan = document.createElement('span');
-                letterSpan.textContent = letter;
-                wordSpan.appendChild(letterSpan);
-            });
-            wordsToTypeContainer.appendChild(wordSpan);
-            const spaceSpan = document.createElement('span');
-            spaceSpan.innerHTML = '&nbsp;';
-            wordsToTypeContainer.appendChild(spaceSpan);
-        });
-
-        userInput.value = '';
-        userInput.focus();
-        resetStats();
-        updateCurrentWord();
-        updateKeyboardHighlight();
-    }
-
-    function initializeGame() {
-        userInput.style.display = 'block';
-        keyboard.classList.remove('hidden');
-        interstitialOverlay.classList.add('hidden');
-        clearInterval(interstitialTimer);
-        populateLevelSelector();
-        loadLevel(0);
-    }
-
-    function resetStats() {
-        clearInterval(timer);
-        time = 0;
-        currentWordIndex = 0;
-        correctStrokes = 0;
-        totalStrokes = 0;
-        gameStarted = false;
-        timeDisplay.textContent = time;
-        wpmDisplay.textContent = 0;
-        accuracyDisplay.textContent = 100;
-    }
-
-    // (Other functions remain the same)
-    function updateCurrentWord() {
-        const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
-        wordSpans.forEach((span, index) => {
-            span.classList.remove('current');
-            if (index === currentWordIndex) {
-                span.classList.add('current');
+        if (key === 'Backspace') {
+            if (state.typedIndex > 0) {
+                state.typedIndex--;
+                const span = state.spans[state.typedIndex];
+                if (span.classList.contains('incorrect')) {
+                    state.mistakes--;
+                }
+                span.classList.remove('correct', 'incorrect');
+                updateHighlights();
             }
-        });
-        updateKeyboardHighlight();
-    }
+        } else if (key.length === 1 && state.typedIndex < state.text.length) {
+            const targetChar = state.text[state.typedIndex];
+            const currentSpan = state.spans[state.typedIndex];
 
-    function updateKeyboardHighlight() {
-        keyboard.querySelectorAll('.key.highlight').forEach(key => key.classList.remove('highlight'));
-        const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
-        if (currentWordIndex >= wordSpans.length) return;
+            if (key === targetChar) {
+                currentSpan.classList.add('correct');
+            } else {
+                currentSpan.classList.add('incorrect');
+                state.mistakes++;
+            }
+            state.typedIndex++;
+            state.totalTyped++;
+            updateHighlights();
+        }
 
-        const currentWordSpan = wordSpans[currentWordIndex];
-        const typedValue = userInput.value;
-        const currentWord = currentWordSpan.textContent;
-        const nextChar = currentWord.charAt(typedValue.length);
+        updateStats();
 
-        if (nextChar) {
-            const key = keyboard.querySelector(`.key[data-key="${nextChar.toLowerCase()}"]`);
-            if (key) key.classList.add('highlight');
-        } else if (typedValue.length === currentWord.length) {
-            const spaceKey = keyboard.querySelector(`.key[data-key=" "]`);
-            if (spaceKey) spaceKey.classList.add('highlight');
+        if (state.typedIndex === state.text.length) {
+            endGame();
         }
     }
 
-    function handleKeyPressFeedback(keyChar, isCorrect) {
-        const keyElement = keyboard.querySelector(`.key[data-key="${keyChar.toLowerCase()}"]`);
-        if (keyElement) {
-            const feedbackClass = isCorrect ? 'key-correct' : 'key-incorrect';
-            keyElement.classList.add(feedbackClass);
-            setTimeout(() => keyElement.classList.remove(feedbackClass), 200);
-        }
+    function startTimer() {
+        state.time = 60;
+        timeEl.textContent = state.time;
+        state.timer = setInterval(() => {
+            state.time--;
+            timeEl.textContent = state.time;
+            if (state.time <= 0) {
+                endGame();
+            }
+            updateStats();
+        }, 1000);
     }
 
-    function startGame() {
-        if (!gameStarted) {
-            gameStarted = true;
-            timer = setInterval(() => {
-                time++;
-                timeDisplay.textContent = time;
-                calculateWPM();
-            }, 1000);
+    function resetGame() {
+        clearInterval(state.timer);
+        inputField.value = '';
+        timeEl.textContent = state.time;
+        wpmEl.textContent = 0;
+        accuracyEl.textContent = '100%';
+        resultModal.style.display = 'none';
+        updateHighlights();
+        inputField.focus();
+    }
+
+    function endGame() {
+        clearInterval(state.timer);
+        state.isTyping = false;
+        const finalWPM = calculateWPM();
+        const finalAccuracy = calculateAccuracy();
+
+        resultWpmEl.textContent = finalWPM;
+        resultAccuracyEl.textContent = `${finalAccuracy}%`;
+        resultModal.style.display = 'flex';
+    }
+
+    function updateStats() {
+        if (state.isTyping) {
+            wpmEl.textContent = calculateWPM();
+            accuracyEl.textContent = `${calculateAccuracy()}%`;
         }
     }
 
     function calculateWPM() {
-        const charsTyped = correctStrokes;
-        const minutes = time / 60;
-        const wpm = minutes > 0 ? Math.round((charsTyped / 5) / minutes) : 0;
-        wpmDisplay.textContent = wpm;
-        return wpm;
+        const grossTyped = state.typedIndex;
+        const netTyped = grossTyped - state.mistakes;
+        const minutes = (new Date() - state.startTime) / 60000;
+        return minutes > 0 ? Math.round((netTyped / 5) / minutes) : 0;
     }
 
     function calculateAccuracy() {
-        const accuracy = totalStrokes > 0 ? Math.round((correctStrokes / totalStrokes) * 100) : 100;
-        accuracyDisplay.textContent = accuracy;
-        return accuracy;
+        return state.totalTyped > 0 ? Math.round(((state.totalTyped - state.mistakes) / state.totalTyped) * 100) : 100;
     }
 
-    userInput.addEventListener('input', () => {
-        if (interstitialOverlay.classList.contains('hidden') === false) {
-            userInput.value = '';
-            return;
+    function updateHighlights() {
+        // Cursor on text
+        document.querySelectorAll('.current').forEach(el => el.classList.remove('current'));
+        if (state.typedIndex < state.text.length) {
+            state.spans[state.typedIndex].classList.add('current');
         }
-        startGame();
-        const wordSpans = wordsToTypeContainer.querySelectorAll('.word');
-        if (currentWordIndex >= wordSpans.length) return;
 
-        const currentWordSpan = wordSpans[currentWordIndex];
-        const currentWord = currentWordSpan.textContent;
-        const typedValue = userInput.value;
+        // Keyboard and fingers
+        const nextChar = state.typedIndex < state.text.length ? state.text[state.typedIndex] : null;
+        highlightKeyAndFinger(nextChar);
+    }
 
-        totalStrokes++;
+    function highlightKeyAndFinger(char) {
+        document.querySelectorAll('.key.active').forEach(k => k.classList.remove('active'));
+        document.querySelectorAll('.finger.active').forEach(f => f.classList.remove('active'));
 
-        const letterSpans = currentWordSpan.querySelectorAll('span');
-        for (let i = 0; i < letterSpans.length; i++) {
-            if (i < typedValue.length) {
-                if (typedValue[i] === currentWord[i]) {
-                    letterSpans[i].className = 'correct';
-                } else {
-                    letterSpans[i].className = 'incorrect';
+        if (char) {
+            const keyEl = document.querySelector(`.key[data-key="${char.toLowerCase() === ' ' ? 'space' : char.toLowerCase()}"]`);
+            if (keyEl) {
+                keyEl.classList.add('active');
+            }
+
+            const fingerInfo = fingerMapping[char];
+            if (fingerInfo) {
+                const fingerEl = document.querySelector(`#${fingerInfo.hand}-hand .${fingerInfo.finger}`);
+                if (fingerEl) {
+                    fingerEl.classList.add('active');
                 }
-            } else {
-                letterSpans[i].className = '';
             }
         }
+    }
 
-        const lastChar = typedValue.slice(-1);
-        if (lastChar) {
-            const isCorrect = lastChar === currentWord[typedValue.length - 1];
-            handleKeyPressFeedback(lastChar, isCorrect);
+    function createKeyboard() {
+        keyboardEl.innerHTML = '';
+        keyboardLayout.forEach(row => {
+            const rowEl = document.createElement('div');
+            rowEl.classList.add('keyboard-row');
+            row.forEach(key => {
+                const keyEl = document.createElement('div');
+                keyEl.classList.add('key');
+                keyEl.textContent = key;
+                const dataKey = key.toLowerCase();
+                keyEl.setAttribute('data-key', dataKey);
+                if (dataKey === 'space') keyEl.classList.add('space');
+                if (key.length > 1 && key !== ' ') keyEl.style.flexGrow = '1.5';
+                rowEl.appendChild(keyEl);
+            });
+            keyboardEl.appendChild(rowEl);
+        });
+    }
+
+    function createFingerGuide() {
+        const hands = {
+            left: { el: leftHandEl, fingers: ['pinky', 'ring', 'middle', 'index', 'thumb'] },
+            right: { el: rightHandEl, fingers: ['thumb', 'index', 'middle', 'ring', 'pinky'] }
+        };
+
+        for (const hand in hands) {
+            hands[hand].el.innerHTML = '';
+            hands[hand].fingers.forEach(fingerName => {
+                const fingerEl = document.createElement('div');
+                fingerEl.classList.add('finger', fingerName);
+                fingerEl.textContent = fingerName.charAt(0).toUpperCase();
+                hands[hand].el.appendChild(fingerEl);
+            });
         }
+    }
 
-        if (typedValue.endsWith(' ')) {
-            if (typedValue.trim() === currentWord) {
-                correctStrokes += currentWord.length + 1;
-            }
-            currentWordIndex++;
-            userInput.value = '';
+    function populateLevels() {
+        levels.forEach((_, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `Level ${index + 1}`;
+            levelSelector.appendChild(option);
+        });
+    }
 
-            if (currentWordIndex >= wordSpans.length) {
-                const finalWpm = calculateWPM();
-                const finalAccuracy = calculateAccuracy();
-                showInterstitial(finalWpm, finalAccuracy);
-            } else {
-                updateCurrentWord();
-            }
-        }
-
-        calculateAccuracy();
-        updateKeyboardHighlight();
-    });
-
-    userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace') {
-            const backspaceKey = keyboard.querySelector('.key[data-key="Backspace"]');
-            if(backspaceKey) {
-                backspaceKey.classList.add('key-correct');
-                setTimeout(() => backspaceKey.classList.remove('key-correct'), 100);
-            }
-        }
-    });
-
-    levelSelect.addEventListener('change', (e) => {
-        const levelIndex = parseInt(e.target.value, 10);
-        loadLevel(levelIndex);
-    });
-
-    nextLevelBtn.addEventListener('click', proceedToNextLevel);
-    restartBtn.addEventListener('click', () => loadLevel(currentLevel));
-
-    initializeGame();
+    init();
 });
