@@ -11,8 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultWpmEl = document.getElementById('result-wpm');
     const resultAccuracyEl = document.getElementById('result-accuracy');
     const nextLevelBtn = document.getElementById('next-level-btn');
+    const countdownEl = document.getElementById('countdown');
 
     // Game Data & State
+    let countdownTimer = null;
     const levels = Array.from({ length: 200 }, (_, i) => {
         if (i < 5) return `asdf jkl;`;
         if (i < 10) return `asdfg hjkl;`;
@@ -72,11 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
         inputField.addEventListener('keydown', handleKeyDown);
         levelSelector.addEventListener('change', (e) => loadLevel(parseInt(e.target.value)));
         nextLevelBtn.addEventListener('click', () => {
-            resultModal.style.display = 'none';
-            const nextLevel = state.currentLevel + 1 < levels.length ? state.currentLevel + 1 : 0;
-            loadLevel(nextLevel);
+            if (countdownTimer) clearInterval(countdownTimer);
+            loadNextLevel();
         });
         document.body.addEventListener('click', () => inputField.focus());
+    }
+
+    function loadNextLevel() {
+        resultModal.style.display = 'none';
+        const nextLevel = state.currentLevel + 1 < levels.length ? state.currentLevel + 1 : 0;
+        loadLevel(nextLevel);
     }
 
     function newState(levelIndex) {
@@ -95,10 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadLevel(levelIndex) {
-        // Clear timer from previous state before creating a new one
-        if (state && state.timer) {
-            clearInterval(state.timer);
-        }
+        // Clear any running timers from previous state
+        if (state && state.timer) clearInterval(state.timer);
+        if (countdownTimer) clearInterval(countdownTimer);
 
         state = newState(levelIndex);
         levelSelector.value = state.currentLevel;
@@ -188,6 +194,18 @@ document.addEventListener('DOMContentLoaded', () => {
         resultWpmEl.textContent = finalWPM;
         resultAccuracyEl.textContent = `${finalAccuracy}%`;
         resultModal.style.display = 'flex';
+
+        let countdownValue = 5;
+        countdownEl.textContent = countdownValue;
+
+        countdownTimer = setInterval(() => {
+            countdownValue--;
+            countdownEl.textContent = countdownValue;
+            if (countdownValue === 0) {
+                clearInterval(countdownTimer);
+                loadNextLevel();
+            }
+        }, 1000);
     }
 
     function updateStats() {

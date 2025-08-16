@@ -263,6 +263,18 @@ header h1 {
     box-shadow: 0 0 20px var(--primary-color);
 }
 
+.next-level-timer {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+#countdown {
+    font-weight: bold;
+    color: var(--highlight-color);
+}
+
 .popup-ad {
     width: 100%;
     height: 60px;
