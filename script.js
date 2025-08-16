@@ -95,6 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadLevel(levelIndex) {
+        // Clear timer from previous state before creating a new one
+        if (state && state.timer) {
+            clearInterval(state.timer);
+        }
+
         state = newState(levelIndex);
         levelSelector.value = state.currentLevel;
 
@@ -165,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetGame() {
-        clearInterval(state.timer);
         inputField.value = '';
         timeEl.textContent = state.time;
         wpmEl.textContent = 0;
