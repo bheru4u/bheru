@@ -88,7 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (countdownTimer) clearInterval(countdownTimer);
             loadNextLevel();
         });
-        document.body.addEventListener('click', () => inputField.focus());
+        document.body.addEventListener('click', (e) => {
+            console.log('Body clicked. Target:', e.target);
+
+            const clickedInHeader = e.target.closest('header');
+            const clickedInModal = e.target.closest('.modal-container');
+
+            console.log('Clicked in header?', clickedInHeader);
+            console.log('Clicked in modal?', clickedInModal);
+
+            if (clickedInHeader || clickedInModal) {
+                console.log('Click was inside a UI element. Ignoring focus logic.');
+                return;
+            }
+
+            console.log('Click was outside UI. Focusing input field.');
+            inputField.focus();
+        });
     }
 
     function loadNextLevel() {
