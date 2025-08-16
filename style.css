@@ -113,7 +113,6 @@ header h1 {
 }
 
 #keyboard {
-    margin-top: 20px;
     display: grid;
     grid-template-rows: repeat(5, 1fr);
     grid-gap: 8px;
