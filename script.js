@@ -126,8 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKeyDown(e) {
+        console.log('[DEBUG] Keydown event fired. Key:', e.key, 'Active element:', document.activeElement.tagName);
         // If an input, textarea, or select is focused, don't handle the keydown
         if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'SELECT') {
+            console.log('[DEBUG] Event ignored because an input/select is focused.');
             return;
         }
 
