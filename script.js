@@ -194,10 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.body.addEventListener('click', (e) => {
+            console.log('[DEBUG] Body clicked. Target:', e.target);
             // If the click is inside the header or modal, don't hijack it.
             if (e.target.closest('header') || e.target.closest('.modal-container')) {
+                console.log('[DEBUG] Click ignored, inside UI element.');
                 return;
             }
+            console.log('[DEBUG] Focusing input field.');
             inputField.focus();
         });
     }
@@ -254,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKeyDown(e) {
+        console.log('[DEBUG] handleKeyDown fired. Key:', e.key);
         e.preventDefault();
         const { key } = e;
 
