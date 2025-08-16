@@ -64,7 +64,18 @@ document.addEventListener('DOMContentLoaded', () => {
         ' ': { hand: 'right', finger: 'thumb' }
     };
 
-    let state = {};
+    let state = {
+        currentLevel: 0,
+        text: '',
+        spans: null,
+        timer: null,
+        time: 60,
+        typedIndex: 0,
+        mistakes: 0,
+        totalTyped: 0,
+        isTyping: false,
+        startTime: null
+    };
 
     function init() {
         createKeyboard();
@@ -86,27 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
         loadLevel(nextLevel);
     }
 
-    function newState(levelIndex) {
-        return {
-            currentLevel: levelIndex,
-            text: levels[levelIndex],
-            spans: null,
-            timer: null,
-            time: 60,
-            typedIndex: 0,
-            mistakes: 0,
-            totalTyped: 0,
-            isTyping: false,
-            startTime: null
-        };
-    }
-
     function loadLevel(levelIndex) {
-        // Clear any running timers from previous state
-        if (state && state.timer) clearInterval(state.timer);
+        // Clear any running timers from the previous state
+        if (state.timer) clearInterval(state.timer);
         if (countdownTimer) clearInterval(countdownTimer);
 
-        state = newState(levelIndex);
+        // Reset properties on the existing state object
+        state.currentLevel = levelIndex;
+        state.text = levels[levelIndex];
+        state.spans = null;
+        state.timer = null;
+        state.time = 60;
+        state.typedIndex = 0;
+        state.mistakes = 0;
+        state.totalTyped = 0;
+        state.isTyping = false;
+        state.startTime = null;
+
         levelSelector.value = state.currentLevel;
 
         textToTypeEl.innerHTML = '';
